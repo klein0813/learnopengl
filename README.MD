@@ -380,6 +380,17 @@ void processInput (GLFWwindow* window) {
 ### 注意点
 
 - 从CPU把数据发送到显卡相对较慢，所以只要可能我们都要尝试尽量一次性发送尽可能多的数据
+- 着色器数据传递到下一层的两种方式
+  1. 使用默认变量：gl_FragColor
+  2. 设置变量
+
+  ```glsl
+    // in vec4 color;
+    out vec4 FragColor;
+    void main () {
+      FragColor = color;
+    }
+  ```
 
 ### 函数
 

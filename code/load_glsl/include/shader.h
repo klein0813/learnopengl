@@ -67,9 +67,6 @@
       void setFloat (const char* name, float value) {
         glUniform1f(glGetUniformLocation(ID, name), value);
       };
-      void set3Float (const char* name, const float* values) {
-        glUniform3f(glGetUniformLocation(ID, name), values[0], values[1], values[2]);
-      };
       void del () {
         glDeleteProgram(ID);
       };

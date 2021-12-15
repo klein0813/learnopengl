@@ -4,11 +4,8 @@
   #include <GLFW/glfw3.h>
   #include <iostream>
   using namespace std;
-  extern unsigned int windowWidth, windowHeight;
 
   void framebuffer_size_callback (GLFWwindow* window, int width, int height) {
-    windowWidth = width;
-    windowHeight = height;
     glViewport(0, 0, width, height);
   }
 

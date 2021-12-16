@@ -480,6 +480,16 @@ void processInput (GLFWwindow* window) {
     - gl_Position 的 Y 分量 - `gl_Position = vec4(apos.x, centerY - apos.y, 0.0, 1.0);`
     - texture 的 T 分量 - `texture(texture2, vec2(1 - oTexCoords.s, oTexCoords.t))`
 
+#### 变换
+
+- Euler Angle Rotation
+
+  ![euler_angle_rotation](./assets/euler_angle_rotation.png)
+
+- 在组合矩阵时，先进行缩放操作，然后是旋转，最后才是位移，否则它们会（消极地）互相影响
+- OpenGL没有自带任何的矩阵和向量知识，所以我们必须定义自己的数学类和函数
+- GLM (OpenGL Mathematics)，专门为OpenGL量身定做的数学库
+
 ### 函数
 
 #### `Shader`

@@ -140,6 +140,10 @@
 - 多级渐远纹理(Mipmap)
   - 简单来说就是一系列的纹理图像，后一个纹理图像是前一个的二分之一
   - 距观察者的距离超过一定的阈值，OpenGL会使用不同的多级渐远纹理，即最适合物体的距离的那个
+- 模型矩阵(Model Matrix)：是一种变换矩阵，它能通过对物体进行位移、缩放、旋转来将它置于它本应该在的位置或朝向
+- `投影(Projection)`：将特定范围内的坐标转化到标准化设备坐标系的过程（而且它很容易被映射到2D观察空间坐标）
+- 平截头体(Frustum)：由投影矩阵创建的观察箱(Viewing Box)被称为平截头体(Frustum)
+- 透视除法(Perspective Division)：是将4D裁剪空间坐标变换为3D标准化设备坐标的过程（将位置向量的x，y，z分量分别除以向量的齐次w分量）。这一步会在每一个顶点着色器运行的最后被自动执行。
 
 ### 简易流程
 
@@ -492,6 +496,42 @@ void processInput (GLFWwindow* window) {
 - 在组合矩阵时，先进行缩放操作，然后是旋转，最后才是位移，否则它们会（消极地）互相影响
 - OpenGL没有自带任何的矩阵和向量知识，所以我们必须定义自己的数学类和函数
 - GLM (OpenGL Mathematics)，专门为OpenGL量身定做的数学库 <https://sourceforge.net/projects/ogl-math/>
+
+### 坐标系统
+
+为了将坐标从一个坐标系变换到另一个坐标系，我们需要用到几个变换矩阵，最重要的几个分别是模型(Model)、观察(View)、投影(Projection)三个矩阵。我们的顶点坐标起始于局部空间(Local Space)，在这里它称为局部坐标(Local Coordinate)，它在之后会变为世界坐标(World Coordinate)，观察坐标(View Coordinate)，裁剪坐标(Clip Coordinate)，并最后以屏幕坐标(Screen Coordinate)的形式结束
+
+![coordinate_systems](./assets/coordinate_systems.png)
+
+- 局部空间
+  - 局部空间是指物体所在的坐标空间，即对象最开始所在的地方
+- 世界空间
+  - 是指顶点相对于（游戏）世界的坐标
+  - 物体的坐标会从局部变换到世界空间；该变换是由模型矩阵(Model Matrix)实现的
+- 观察空间
+  - 经常被人们称之OpenGL的摄像机(Camera)（所以有时也称为摄像机空间(Camera Space)或视觉空间(Eye Space)）
+  - 是从摄像机的视角所观察到的空间
+  - 通常是由一系列的位移和旋转的组合来完成，平移/旋转场景从而使得特定的对象被变换到摄像机的前方。这些组合在一起的变换通常存储在一个观察矩阵(View Matrix)里，它被用来将世界坐标变换到观察空间
+- 裁剪空间
+  - 为了将顶点坐标从观察变换到裁剪空间，我们需要定义一个投影矩阵(Projection Matrix)，它指定了一个范围的坐标，超出了范围的坐标会被裁剪
+  - 如果只是图元(Primitive)，例如三角形，的一部分超出了裁剪体积(Clipping Volume)，则OpenGL会重新构建这个三角形为一个或多个三角形让其能够适合这个裁剪范围。
+  - 将观察坐标变换为裁剪坐标的投影矩阵可以为两种不同的形式，每种形式都定义了不同的平截头体。我们可以选择创建一个正射投影矩阵(Orthographic Projection Matrix)或一个透视投影矩阵(Perspective Projection Matrix)。
+
+#### 正射投影矩阵(Orthographic Projection Matrix)
+
+- 定义了一个类似立方体的平截头体
+- 创建一个正射投影矩阵需要指定可见平截头体的宽、高和长度
+
+![orthographic_frustum.png](./assets/orthographic_frustum.png)
+
+- 上面的平截头体定义了可见的坐标，它由由宽、高、近(Near)平面和远(Far)平面所指定
+- 要创建一个正射投影矩阵，我们可以使用GLM的内置函数 `glm::ortho`
+
+```c++
+glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+```
+
+#### 透视投影矩阵(Perspective Projection Matrix)
 
 ### 函数
 

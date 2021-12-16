@@ -52,3 +52,12 @@
 - Eye Space: 视觉空间
 - Clip Space: 裁剪空间
 - Screen Space: 屏幕空间
+- Viewport Transform: 视口变换
+- View Matrix: 观察矩阵
+- Projection Matrix: 投影矩阵
+- Clipping Volume: 裁剪体积
+- Viewing Box: 观察箱
+- Frustum: 平截头体
+- Perspective Division: 透视除法
+- Orthographic Projection Matrix: 正射投影矩阵
+- Perspective Projection Matrix: 透视投影矩阵

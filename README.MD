@@ -44,7 +44,7 @@
 - CMake 编译 GLFW 源码
   - 点击 Configure 选择 Visual Studio 版本
 
-    ![cmake_compile_sourcecode_vs](../../assets/cmake_compile_sourcecode_vs.png)
+    ![cmake_compile_sourcecode_vs](./assets/cmake_compile_sourcecode_vs.png)
   - 点击 Generate 生成
 
 #### 基于 VS Code
@@ -94,7 +94,7 @@
 
     - 项目结构树
 
-      ![项目结构树](../../assets/openGL_env_vscode_structruetree.png)
+      ![项目结构树](./assets/openGL_env_vscode_structruetree.png)
 
   - 3.3
     - main.cpp
@@ -108,7 +108,7 @@
 
     - 项目结构树
 
-      ![项目结构树](../../assets/openGL3.3_env_vscode_structruetree.png)
+      ![项目结构树](./assets/openGL3.3_env_vscode_structruetree.png)
 
   - Run - `mingw32-make run`
 
@@ -118,7 +118,7 @@
 
 - `图形渲染管线(Graphics Pipeline)`
 
-  ![opengl-render-piplineflow-chart(berief)](../../assets/opengl-render-piplineflow-chart(berief).png)
+  ![opengl-render-piplineflow-chart(berief)](./assets/opengl-render-piplineflow-chart(berief).png)
 
 - `顶点着色器(Vertex Shader)`：是把3D坐标转为另一种3D坐标，同时允许我们对顶点属性进行一些基本处理
   - 例：`GL_POINTS`、`GL_TRIANGLES`、`GL_LINE_STRIP`
@@ -136,6 +136,10 @@
 - 视口(Viewport)：渲染窗口的尺寸大小
 - 顶点数组对象(Vertex Array Object，VAO)：可以像顶点缓冲对象那样被绑定，任何随后的顶点属性调用都会储存在这个VAO中。这样的好处就是，当配置顶点属性指针时，你只需要将那些调用执行一次，之后再绘制物体的时候只需要绑定相应的VAO就行了。这使在不同顶点数据和属性配置之间切换变得非常简单，只需要绑定不同的VAO就行了。刚刚设置的所有状态都将存储在VAO中
   - OpenGL的核心模式要求我们使用VAO，所以它知道该如何处理我们的顶点输入。如果我们绑定VAO失败，OpenGL会拒绝绘制任何东西。
+- 纹理像素：Texture Pixel也叫Texel，你可以想象你打开一张.jpg格式图片，不断放大你会发现它是由无数像素点组成的，这个点就是纹理像素
+- 多级渐远纹理(Mipmap)
+  - 简单来说就是一系列的纹理图像，后一个纹理图像是前一个的二分之一
+  - 距观察者的距离超过一定的阈值，OpenGL会使用不同的多级渐远纹理，即最适合物体的距离的那个
 
 ### 简易流程
 
@@ -391,6 +395,90 @@ void processInput (GLFWwindow* window) {
       FragColor = color;
     }
   ```
+- 纹理重复排列顺序方向：左到右、下到上
+
+  ![texture_repeat_direction](./assets/texture_repeat_direction.png)
+
+### 纹理
+
+- 纹理环绕方式（GL_TEXTURE_WRAP_S / GL_TEXTURE_WRAP_T）/ （纹理坐标在范围之外）
+  - GL_REPEAT：对纹理的默认行为。重复纹理图像。
+  - GL_MIRRORED_REPEAT：和GL_REPEAT一样，但每次重复图片是镜像放置的。
+  - GL_CLAMP_TO_EDGE：纹理坐标会被约束在0到1之间，超出的部分会重复纹理坐标的边缘，产生一种边缘被拉伸的效果。
+  - GL_CLAMP_TO_BORDER：超出的坐标为用户指定的边缘颜色。
+    - glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor); // 边缘的颜色值
+
+  ![texture_wrapping](./assets/texture_wrapping.png)
+
+- 纹理过滤 （GL_TEXTURE_MIN_FILTER / GL_TEXTURE_MAG_FILTER）
+  - GL_NEAREST（也叫邻近过滤，Nearest Neighbor Filtering），是OpenGL默认的纹理过滤方式。当设置为GL_NEAREST的时候，OpenGL会选择中心点最接近纹理坐标的那个像素
+
+    ![filter_nearest](./assets/filter_nearest.png)
+
+  - GL_LINEAR（也叫线性过滤，(Bi)linear Filtering），它会基于纹理坐标附近的纹理像素，计算出一个插值，近似出这些纹理像素之间的颜色。一个纹理像素的中心距离纹理坐标越近，那么这个纹理像素的颜色对最终的样本颜色的贡献越大
+
+    ![filter_linear](./assets/filter_linear.png)
+
+  - 放大(Magnify)和缩小(Minify)
+
+  ![filter](./assets/texture_filtering.png)
+
+- 多级渐远纹理(Mipmap)
+
+  ![mipmap](./assets/mipmaps.png)
+  - glGenerateMipmaps
+  - 在渲染中切换多级渐远纹理级别(Level)时，OpenGL在两个不同级别的多级渐远纹理层之间会产生不真实的生硬边界
+    - filter
+    - GL_NEAREST_MIPMAP_NEAREST
+    - GL_LINEAR_MIPMAP_NEAREST
+    - GL_NEAREST_MIPMAP_NEAREST
+    - GL_LINEAR_MIPMAP_LINEAR
+  - 多级渐远纹理主要是使用在纹理被缩小的情况下的：纹理放大不会使用多级渐远纹理，为放大过滤设置多级渐远纹理的选项会产生一个GL_INVALID_ENUM错误代码
+
+- stb_image.h
+  - 是Sean Barrett的一个非常流行的单头文件图像加载库，它能够加载大部分流行的文件格式，并且能够很简单得整合到工程之中
+  - 下载地址：<https://github.com/nothings/stb/blob/master/stb_image.h>
+  - 使用
+
+    ```c++
+      #define STB_IMAGE_IMPLEMENTATION
+      #include "stb_image.h"
+      
+      int width, height, nrChannels;
+      unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);
+    ```
+
+  - 释放图像内存 - `stbi_image_free(data);`
+
+- 当调用glTexImage2D时，当前绑定的纹理对象就会被附加上纹理图像。然而，目前只有基本级别(Base-level)的纹理图像被加载了，如果要使用多级渐远纹理，我们必须手动设置所有不同的图像（不断递增第二个参数）。或者，直接在生成纹理之后调用glGenerateMipmap。这会为当前绑定的纹理自动生成所有需要的多级渐远纹理
+
+- 创建过程
+
+  ```c++
+    unsigned int texture;
+    glGenTextures(1, &texture); // 创建
+    glBindTexture(GL_TEXTURE_2D, texture);  // 绑定
+    glTexImage(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data); // 写入图像数据到纹理
+    glGenerateMipmap(GL_TEXTURE_2D); // 生成所有需要的多级渐远纹理
+  ```
+
+- 纹理上下颠倒了, OpenGL要求y轴0.0坐标是在图片的底部的，但是图片的y轴0.0坐标通常在顶部, 处理方法：
+  - 颠倒图片：`stbi_set_flip_vertically_on_load(true)`
+  - 翻转坐标
+    - 翻转纹理坐标
+
+      ```c++
+        const float* vertices = {
+          0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f, // bottom right
+          0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f, // top right
+          -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f, // bottom left
+          -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f  // top left
+        }
+
+    - 翻转顶点坐标
+  - 着色器内翻转坐标
+    - gl_Position 的 Y 分量 - `gl_Position = vec4(apos.x, centerY - apos.y, 0.0, 1.0);`
+    - texture 的 T 分量 - `texture(texture2, vec2(1 - oTexCoords.s, oTexCoords.t))`
 
 ### 函数
 
@@ -451,3 +539,14 @@ void processInput (GLFWwindow* window) {
 
 - 状态使用函数
   - glClear(GL_COLOR_BUFFER_BIT)
+
+#### Texture
+
+- glTexImage2D(GL_TEXTURE_2D, GL_RGB, 0, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+  - 第一个参数指定了纹理目标(Target)。设置为GL_TEXTURE_2D意味着会生成与当前绑定的纹理对象在同一个目标上的纹理（任何绑定到GL_TEXTURE_1D和GL_TEXTURE_3D的纹理不会受到影响）。
+  - 第二个参数为纹理指定多级渐远纹理(mipmap)的级别，如果你希望单独手动设置每个多级渐远纹理的级别的话。这里我们填0，也就是基本级别。
+  - 第三个参数告诉OpenGL我们希望把纹理储存为何种格式。我们的图像只有RGB值，因此我们也把纹理储存为RGB值。
+  - 第四个和第五个参数设置最终的纹理的宽度和高度。我们之前加载图像的时候储存了它们，所以我们使用对应的变量。
+  - 下个参数应该总是被设为0（历史遗留的问题）。
+  - 第七第八个参数定义了源图的格式和数据类型。我们使用RGB值加载这个图像，并把它们储存为char(byte)数组，我们将会传入对应值。
+  - 最后一个参数是真正的图像数据。

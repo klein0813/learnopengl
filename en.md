@@ -37,3 +37,18 @@
 - Gimbal Lock: 万向节死锁
 - Quaternion: 四元数
 - Stereographic Projection: 球极平面投影
+- Transpose: 置换
+- Column-major Ordering: 列主序
+
+## Coordinate Systems(坐标系统)
+
+- Normalized Device Coordinate, NDC: 标准化设备坐标
+- Rasterizer: 光栅器
+- Intermediate Coordinate System: 过渡坐标系
+- Local Space: 局部空间
+- Object Space: 物体空间
+- World Space: 世界空间
+- View Space: 观察空间
+- Eye Space: 视觉空间
+- Clip Space: 裁剪空间
+- Screen Space: 屏幕空间

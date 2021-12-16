@@ -4,6 +4,9 @@
 #include "GLFW/glfw3.h"
 #include "shader.h"
 #include "common.h"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -30,10 +33,10 @@ int main () {
     // 0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.7f, 0.7f,
     // -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.5f, 0.5f,
     // -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   0.5f, 0.7f
-    0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   3.7f, 0.0f,
-    0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   3.7f, 3.7f,
+    0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   2.7f, 0.0f,
+    0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   2.7f, 2.7f,
     -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-    -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 3.7f
+    -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 2.7f
   };
   unsigned int VAO, VBO;
   glGenVertexArrays(1, &VAO);
@@ -89,6 +92,7 @@ int main () {
   shader.use(); // 不要忘记在设置uniform变量之前激活着色器程序！
   shader.setInt("texture1", 0);
   shader.setInt("texture2", 1);
+  glm::mat4 trans;
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   while (!glfwWindowShouldClose(window)) {
@@ -102,8 +106,21 @@ int main () {
     glBindTexture(GL_TEXTURE_2D, texture2);
 
     // shader.use();
+    trans = glm::mat4(1.0f);
+    trans = glm::translate(trans, glm::vec3(0.3f, 0.3f, 0.0f));
+    // trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    trans = glm::scale(trans, glm::vec3(0.7f, 0.7f, 0.7f));
+    // (float)(glfwGetTime() * 0.0001)
+    trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+    shader.setMat4("transform", glm::value_ptr(trans));
     shader.setFloat("alpha", mixAlpha);
     glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    trans = glm::mat4(1.0f);
+    float scaleAmount = sin(glfwGetTime());
+    trans = glm::translate(trans, glm::vec3(-0.3f, 0.0f, 0.0f));
+    trans = glm::scale(trans, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+    shader.setMat4("transform", glm::value_ptr(trans));
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glfwSwapBuffers(window);
     glfwPollEvents();

@@ -70,6 +70,9 @@
       void set3Float (const char* name, const float* values) {
         glUniform3f(glGetUniformLocation(ID, name), values[0], values[1], values[2]);
       };
+      void setMat4(const char* name, const float* values) {
+        glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, false, values);
+      };
       void del () {
         glDeleteProgram(ID);
       };

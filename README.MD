@@ -396,8 +396,11 @@ void processInput (GLFWwindow* window) {
     }
   ```
 - 纹理重复排列顺序方向：左到右、下到上
+- glsl 内部矩阵是列主序(Column-major Ordering)布局
+- glsl 矩阵变换是基于上次位置变换，不是基于原点变换
 
   ![texture_repeat_direction](./assets/texture_repeat_direction.png)
+- 缩放变换，负值会导致物体被翻转
 
 ### 纹理
 
@@ -480,7 +483,7 @@ void processInput (GLFWwindow* window) {
     - gl_Position 的 Y 分量 - `gl_Position = vec4(apos.x, centerY - apos.y, 0.0, 1.0);`
     - texture 的 T 分量 - `texture(texture2, vec2(1 - oTexCoords.s, oTexCoords.t))`
 
-#### 变换
+### 变换
 
 - Euler Angle Rotation
 
@@ -488,7 +491,7 @@ void processInput (GLFWwindow* window) {
 
 - 在组合矩阵时，先进行缩放操作，然后是旋转，最后才是位移，否则它们会（消极地）互相影响
 - OpenGL没有自带任何的矩阵和向量知识，所以我们必须定义自己的数学类和函数
-- GLM (OpenGL Mathematics)，专门为OpenGL量身定做的数学库
+- GLM (OpenGL Mathematics)，专门为OpenGL量身定做的数学库 <https://sourceforge.net/projects/ogl-math/>
 
 ### 函数
 
@@ -540,6 +543,14 @@ void processInput (GLFWwindow* window) {
 - glViewport(0, 0, 800, 600);
   - 设置窗口的维度
   - 前两个参数控制窗口左下角的位置。第三个和第四个参数控制渲染窗口的宽度和高度（像素）
+
+#### Uniform
+
+- glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+  - uniform的位置值
+  - 将要发送多少个矩阵
+  - 是否希望对我们的矩阵进行置换(Transpose)
+  - 矩阵数据
 
 #### Status
 

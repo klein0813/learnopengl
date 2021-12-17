@@ -56,13 +56,19 @@
       mixAlpha += 0.001;
     } else if (glfwGetKey(window, GLFW_KEY_DOWN)) {
       mixAlpha -= 0.001;
-    } else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    } else if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) { // =
       cameraPos += cameraSpeed * cameraFront;
-    } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    } else if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) { // -
       cameraPos -= cameraSpeed * cameraFront;
-    } else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    } else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) { // w
+      glm::vec3 rightAxio = glm::cross(cameraUp, cameraFront);
+      cameraPos += cameraSpeed * glm::normalize(glm::cross(rightAxio, cameraFront));
+    } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) { // s
+      glm::vec3 rightAxio = glm::cross(cameraUp, cameraFront);
+      cameraPos -= cameraSpeed * glm::normalize(glm::cross(rightAxio, cameraFront));
+    } else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { // a
       cameraPos -= glm::normalize(glm::cross(cameraUp, cameraFront)) * cameraSpeed;
-    } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) { // d
       cameraPos += glm::normalize(glm::cross(cameraUp, cameraFront)) * cameraSpeed;
     }
   }

@@ -61,3 +61,7 @@
 - Perspective Division: 透视除法
 - Orthographic Projection Matrix: 正射投影矩阵
 - Perspective Projection Matrix: 透视投影矩阵
+- Field of View: 视野
+- Z-buffer: Z缓冲
+- Depth Buffer: 深度缓冲
+- Depth Testing: 深度测试

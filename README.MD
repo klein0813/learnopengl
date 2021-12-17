@@ -144,6 +144,7 @@
 - `投影(Projection)`：将特定范围内的坐标转化到标准化设备坐标系的过程（而且它很容易被映射到2D观察空间坐标）
 - 平截头体(Frustum)：由投影矩阵创建的观察箱(Viewing Box)被称为平截头体(Frustum)
 - 透视除法(Perspective Division)：是将4D裁剪空间坐标变换为3D标准化设备坐标的过程（将位置向量的x，y，z分量分别除以向量的齐次w分量）。这一步会在每一个顶点着色器运行的最后被自动执行。
+- 透视(Perspective)：离越远的东西看起来更小，这个奇怪的效果称之为透视(Perspective)
 
 ### 简易流程
 
@@ -402,6 +403,8 @@ void processInput (GLFWwindow* window) {
 - 纹理重复排列顺序方向：左到右、下到上
 - glsl 内部矩阵是列主序(Column-major Ordering)布局
 - glsl 矩阵变换是基于上次位置变换，不是基于原点变换
+- 使用深度测试时，需要每次渲染迭代之前清除深度缓冲（否则前一帧的深度信息仍然保存在缓冲中
+- 深度测试，默认是 z 小的在上面
 
   ![texture_repeat_direction](./assets/texture_repeat_direction.png)
 - 缩放变换，负值会导致物体被翻转
@@ -532,6 +535,20 @@ glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 ```
 
 #### 透视投影矩阵(Perspective Projection Matrix)
+
+![perspective_frustum.png](./assets/perspective_frustum.png)
+
+- 顶点坐标的每个分量都会除以它的w分量，距离观察者越远顶点坐标就会越小
+
+```c++
+glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f)
+```
+
+#### 组合到一起
+
+$V_{cilp}=M{projection}·M{view}·M{model}·M{local}$
+
+- 我们需要沿着z轴的正方向移动。我们会通过将场景沿着z轴负方向平移来实现。它会给我们一种我们在往后移动的感觉
 
 ### 函数
 

@@ -144,6 +144,7 @@ int main () {
   shader.setMat4("model", glm::value_ptr(model));
 
   while (!glfwWindowShouldClose(window)) {
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwProcessInput(window);
     glClearColor(0.3f, 0.4f, 0.4f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

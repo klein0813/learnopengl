@@ -601,6 +601,44 @@ $V_{cilp}=M{projection}·M{view}·M{model}·M{local}$
   - 图形程序和游戏通常会跟踪一个时间差(Deltatime)变量，它储存了渲染上一帧所用的时间。我们把所有速度都去乘以deltaTime值。结果就是，如果我们的deltaTime很大，就意味着上一帧的渲染花费了更多时间，所以这一帧的速度需要变得更高来平衡渲染所花去的时间
 
 - 视角移动
+  - 欧拉角
+  
+    ![camera_pitch_yaw_roll](./assets/camera_pitch_yaw_roll.png)
+
+    - 俯仰角(Pitch)：如何往上或往下看的角
+
+      ![camera_pitch.png](./assets/camera_pitch.png)
+
+    - 偏航角(Yaw)：往左和往右看的程度
+
+      ![camera_pitch.png](./assets/camera_yaw.png)
+
+    - 滚转角(Roll)：何翻滚摄像机
+  
+  ```c++
+    direction.x = cos(radians(pitch)) * cos(radians(yaw));
+    direction.y = sin(radians(pitch));
+    direction.z = cos(radians(pitch)) * sin(radians(yaw))
+  ```
+
+  - 鼠标输入
+    - 偏航角和俯仰角是通过鼠标（或手柄）移动获得的，水平的移动影响偏航角，竖直的移动影响俯仰角
+  - 原理：储存上一帧鼠标的位置，在当前帧中我们当前计算鼠标位置与上一帧的位置相差多少
+  - 流程
+    - 告诉GLFW，它应该隐藏光标，并捕捉(Capture)它
+      - 捕捉光标表示的是，如果焦点在你的程序上（译注：即表示你正在操作这个程序，Windows中拥有焦点的程序标题栏通常是有颜色的那个，而失去焦点的程序标题栏则是灰色的），光标应该停留在窗口中（除非程序失去焦点或者退出）
+      - `glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);`
+    - 为了计算俯仰角和偏航角，我们需要让GLFW监听鼠标移动事件
+      - `mouse_callback(GLFWwindow* window, double xpos, double ypos);`
+      - `glfwSetCursorPosCallback(window, mouse_callback);`
+    - 计算
+      - 计算鼠标距上一帧的偏移量
+      - 把偏移量添加到摄像机的俯仰角和偏航角中
+      - 对偏航角和俯仰角进行最大和最小值的限制
+      - 计算方向向量
+    - 处理
+      - 对于俯仰角，要让用户不能看向高于89度的地方（在90度时视角会发生逆转，所以我们把89度作为极限），同样也不允许小于-89度。这样能够保证用户只能看到天空或脚下
+      - 第一次获取焦点的时候摄像机会突然跳一下
 
 ### 函数
 

@@ -16,11 +16,43 @@
 
   float deltaTime = 0.0f;
   float lastTime = 0.0f;
+  bool firstMouse = true;
+  float lastX = windowWidth / 2.0;
+  float lastY = windowHeight / 2.0;
+  const float sensitivity = 0.05f;
+  float pitch = 0.0f;
+  float yaw = 0.0f;
 
   void framebuffer_size_callback (GLFWwindow* window, int width, int height) {
     windowWidth = width;
     windowHeight = height;
     glViewport(0, 0, width, height);
+  }
+
+  void cursor_callback (GLFWwindow* window, double xpos, double ypos) {
+    if (firstMouse) {
+      lastX = xpos;
+      lastY = ypos;
+      firstMouse = false;
+    }
+    float xOffset = xpos - lastX;
+    float yOffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+    xOffset *= sensitivity;
+    yOffset *= sensitivity;
+    pitch += yOffset;
+    yaw += xOffset;
+    if (pitch > 89.0f) {
+      pitch = 89.0f;
+    } else if (pitch < -89.0f) {
+      pitch = -89.0f;
+    }
+    glm::vec3 front;
+    front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+    front.y = sin(glm::radians(pitch));
+    front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+    cameraFront *= glm::normalize(front);
   }
 
   GLFWwindow* initOpenGLENV(const unsigned int windowWidth, const unsigned int widthHeight, const char* windowTilte) {
@@ -38,6 +70,7 @@
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, cursor_callback);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
       cout << "INITIALIZE GLAD FAILED." << endl;
       return NULL;

@@ -72,3 +72,13 @@
 - radius: 半径
 - Strafe: 横移
 - Deltatime: 时间差
+- Leonhard Euler: 莱昂哈德·欧拉
+- Euler Angle: 欧拉角
+- Pitch: 俯仰角
+- Yaw: 偏航角
+- Roll: 滚转角
+- hypotenuse: 斜边
+- Capture: 捕捉
+- Frames per Second(FPS): 每秒显示帧数（帧率）
+- Cursor: 光标
+- Sensitivity: 灵敏度

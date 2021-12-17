@@ -65,3 +65,9 @@
 - Z-buffer: Z缓冲
 - Depth Buffer: 深度缓冲
 - Depth Testing: 深度测试
+
+## Camera(摄像机)
+
+- Gram-Schmidt Process: 格拉姆—施密特正交化
+- radius: 半径
+- Strafe: 横移
